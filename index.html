@@ -66,6 +66,7 @@ body {
 .timer { font-size: 1.3rem; font-variant-numeric: tabular-nums; color: var(--accent); }
 h1.title { font-size: clamp(2.3rem, 9vw, 3.2rem); line-height: 1.1; margin: 2rem 0 1rem; }
 h2.page-title { font-size: 1.6rem; line-height: 1.2; margin: 0 0 1rem; }
+.kind { margin: 0 0 .25rem; color: var(--muted); font-size: 1rem; }
 .lead { font-size: 1.3rem; }
 .rules { margin: 1.25rem 0 2rem; padding-left: 1.2rem; color: var(--muted); }
 .rules li { margin-bottom: .35rem; }
@@ -77,13 +78,14 @@ h2.page-title { font-size: 1.6rem; line-height: 1.2; margin: 0 0 1rem; }
   background: var(--accent); color: var(--accent-ink);
 }
 .btn.ghost { background: transparent; color: var(--accent); }
-.btn:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-.seals { display: flex; gap: .6rem; justify-content: center; margin: 0 0 1.5rem; padding: 0; list-style: none; }
+.btn:focus-visible, input:focus-visible, .opt:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.seals { display: flex; flex-wrap: wrap; gap: .3rem; justify-content: center; margin: 0 0 1.5rem; padding: 0; list-style: none; }
 .seal {
-  width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  width: clamp(1.7rem, 7.5vw, 2.4rem); height: clamp(1.7rem, 7.5vw, 2.4rem); border-radius: 50%;
   border: 2px solid var(--line); display: grid; place-items: center;
-  font-family: "Metamorphous", Georgia, serif; font-size: 1rem; color: var(--muted);
+  font-family: "Metamorphous", Georgia, serif; font-size: .85rem; color: var(--muted);
 }
+.seal.q { border-radius: .35rem; }
 .seal.current { border-color: var(--accent); color: var(--accent); border-width: 3px; }
 .seal.done { background: var(--ok); border-color: var(--ok); color: var(--bg); }
 .page {
@@ -91,8 +93,8 @@ h2.page-title { font-size: 1.6rem; line-height: 1.2; margin: 0 0 1rem; }
   border-radius: .4rem; padding: 1.5rem 1.4rem;
 }
 .riddle { font-size: 1.3rem; margin: 0 0 1rem; }
-.code { font-family: "Metamorphous", Georgia, serif; font-size: 1.5rem; letter-spacing: .08em; text-align: center; margin: 1.25rem 0; }
-.alpha { display: grid; grid-template-columns: repeat(auto-fill, minmax(3.7rem, 1fr)); gap: .3rem; font-size: .95rem; margin: 1rem 0; color: var(--muted); }
+.code { font-family: "Metamorphous", Georgia, serif; font-size: 1.8rem; letter-spacing: .25em; text-align: center; margin: 1.25rem 0; }
+.alpha { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.2rem, 1fr)); gap: .3rem; font-size: .95rem; margin: 1rem 0; color: var(--muted); }
 .alpha span { border: 1px solid var(--line); border-radius: .25rem; padding: .1rem .35rem; text-align: center; }
 .alpha b { color: var(--ink); }
 .poem, .statements { margin: 1rem 0; border-left: 4px solid var(--line); padding: .3rem 0 .3rem 1.1rem; }
@@ -102,7 +104,6 @@ ul.statements { list-style: none; }
 .statements li { margin: .45rem 0; }
 .opts { display: grid; gap: .6rem; margin: 1rem 0; }
 .opt { font: inherit; text-align: left; min-height: 3rem; padding: .7rem 1rem; border: 2px solid var(--line); border-radius: .4rem; background: var(--bg); color: var(--ink); cursor: pointer; }
-.opt:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .opt:disabled { cursor: default; color: var(--ink); }
 .opt.right, .opt.right:disabled { background: var(--ok); border-color: var(--ok); color: var(--bg); font-weight: 700; }
 .opt.wrong, .opt.wrong:disabled { border-color: var(--warn); color: var(--warn); font-weight: 700; }
@@ -141,76 +142,110 @@ input[type="text"] {
 <body>
 <div id="app"></div>
 <script>
-var RIDDLES = [
+var STEPS = [
   {
-    title: "Le sceau du poème",
-    text: "Sur le premier feuillet du grimoire, un poème. Il cache le nom de l’objet dans lequel la sorcière prépare ses potions. À vous de le trouver.",
-    extra: '<p class="poem">Cette nuit, la lune éclaire le cimetière,<br>Hibou et corbeaux guettent la clairière.<br>Autour du feu, les sorcières murmurent<br>Un sortilège aux paroles obscures.<br>Dans l’ombre, un chat noir se faufile,<br>Rôde sans bruit, discret et agile.<br>Où se cache le trésor des sorcières&nbsp;?<br>Nul ne le sait, et la nuit est entière.</p>',
-    answers: ["chaudron"],
-    show: "CHAUDRON",
-    hint: "Regardez la première lettre de chaque vers.",
-    mode: "text"
+    kind: "quiz",
+    q: "D’où vient la fête d’Halloween, à l’origine&nbsp;?",
+    o: ["Des États-Unis", "D’Irlande", "Du Mexique", "De Roumanie"],
+    a: 1,
+    why: "Elle vient de Samain, une fête celtique irlandaise, exportée ensuite aux États-Unis par les émigrés irlandais."
   },
   {
-    title: "Le sceau du code",
-    text: "Le feuillet suivant est écrit en code. Chaque lettre a été remplacée par celle qui se trouve 3 rangs plus loin dans l’alphabet&nbsp;: A devient D, B devient E, et ainsi de suite. Pour décoder, il faut reculer de 3 rangs. Quelle créature de la nuit se cache ici&nbsp;?",
-    extra: "code",
-    answers: ["vampire"],
-    show: "VAMPIRE",
-    hint: "Y recule de 3 rangs&nbsp;: X, W, V. La première lettre est donc V.",
-    mode: "text"
-  },
-  {
-    title: "Le sceau des fioles",
-    text: "Sur l’étagère de la sorcière, les fioles sont numérotées dans un ordre précis. Quel numéro porte la fiole suivante&nbsp;?",
-    extra: '<p class="code">2 – 6 – 12 – 20 – 30 – ?</p>',
-    answers: ["42"],
-    show: "42",
-    hint: "Regardez l’écart entre deux nombres qui se suivent&nbsp;: il change à chaque fois.",
-    mode: "numeric"
-  },
-  {
+    kind: "riddle",
     title: "Le sceau du voleur",
-    text: "La potion a été volée par l’un de ces trois suspects. Un seul dit la vérité, les deux autres mentent. Qui est le voleur&nbsp;?",
-    extra: '<ul class="statements"><li><b>La Momie</b>&nbsp;: «&nbsp;Ce n’est pas moi.&nbsp;»</li><li><b>Le Fantôme</b>&nbsp;: «&nbsp;C’est la Momie.&nbsp;»</li><li><b>Le Squelette</b>&nbsp;: «&nbsp;Ce n’est pas le Fantôme.&nbsp;»</li></ul>',
-    answers: ["fantome"],
-    show: "FANTOME",
-    hint: "Supposez que le voleur est la Momie, puis le Fantôme, puis le Squelette. À chaque fois, comptez combien de phrases sont vraies&nbsp;: il doit y en avoir une seule.",
-    mode: "text"
+    text: "La potion de la sorcière a été volée par l’un de ces trois suspects. Un seul dit la vérité, les deux autres mentent. Qui est le voleur&nbsp;?",
+    extra: '<ul class="statements"><li><b>Le Fantôme</b>&nbsp;: «&nbsp;Ce n’est pas moi.&nbsp;»</li><li><b>Le Squelette</b>&nbsp;: «&nbsp;C’est le Fantôme.&nbsp;»</li><li><b>La Momie</b>&nbsp;: «&nbsp;Ce n’est pas le Squelette.&nbsp;»</li></ul>',
+    answers: ["squelette"],
+    show: "SQUELETTE",
+    hint: "Supposez que le voleur est le Fantôme, puis le Squelette, puis la Momie. À chaque fois, comptez combien de phrases sont vraies&nbsp;: il doit y en avoir une seule."
   },
   {
+    kind: "quiz",
+    q: "Avant la citrouille, quel légume creusait-on pour en faire une lanterne&nbsp;?",
+    o: ["Le chou", "La betterave", "Le navet", "Le poireau"],
+    a: 2,
+    why: "C’était le navet. La citrouille, plus grosse et plus facile à creuser, l’a remplacé en Amérique."
+  },
+  {
+    kind: "riddle",
+    title: "Le sceau du code",
+    text: "Le feuillet suivant est écrit en code. Chaque lettre a été remplacée par celle qui se trouve 3 rangs plus loin dans l’alphabet&nbsp;: A devient D, B devient E, et ainsi de suite. Pour décoder, il faut reculer de 3 rangs. Quelle créature des contes, grande et gourmande, se cache ici&nbsp;?",
+    extra: "code",
+    answers: ["ogre"],
+    show: "OGRE",
+    hint: "R recule de 3 rangs&nbsp;: Q, P, O. La première lettre est donc O."
+  },
+  {
+    kind: "quiz",
+    q: "Que signifie «&nbsp;trick or treat&nbsp;»&nbsp;?",
+    o: ["Une farce ou une friandise", "Un costume ou un masque", "Une chanson ou un cri", "Un jeu ou un cadeau"],
+    a: 0,
+    why: "Le «&nbsp;trick&nbsp;» est la farce promise si l’on ne reçoit pas de friandise."
+  },
+  {
+    kind: "riddle",
+    title: "Le sceau du poème",
+    text: "Sur le feuillet suivant, un poème. Il cache le nom d’une créature de la nuit, un esprit qui ne repose pas en paix. À vous de le trouver.",
+    extra: '<p class="poem">Rien ne bouge dans la vieille maison,<br>Entre les murs, un souffle, une chanson.<br>Voilà que la porte grince doucement,<br>Et l’escalier craque on ne sait comment.<br>Nul ne voit l’ombre qui glisse sur le sol,<br>Au fond du couloir, elle prend son envol.<br>Nuit après nuit, elle revient sans bruit,<br>Tremblez, il est là, caché dans la nuit.</p>',
+    answers: ["revenant"],
+    show: "REVENANT",
+    hint: "Regardez la première lettre de chaque vers."
+  },
+  {
+    kind: "quiz",
+    q: "Dans le roman de Mary Shelley, qui s’appelle Frankenstein&nbsp;?",
+    o: ["Le monstre", "Le docteur qui le crée", "Le village", "Le laboratoire"],
+    a: 1,
+    why: "Frankenstein est le nom du docteur. La créature, elle, n’a pas de nom."
+  },
+  {
+    kind: "riddle",
+    title: "Le sceau du tisserand",
+    text: "Je suis fine, mais très solide. Personne ne m’a tricotée&nbsp;: une petite bête à huit pattes me tisse dans un coin de la cave. Les mouches s’y collent et n’en repartent pas. Qui suis-je&nbsp;?",
+    extra: "",
+    answers: ["toile"],
+    show: "TOILE",
+    hint: "Je suis faite de fils de soie et je brille quand la rosée se dépose sur moi."
+  },
+  {
+    kind: "quiz",
+    q: "Quel est le seul mammifère capable de voler vraiment&nbsp;?",
+    o: ["L’écureuil volant", "Le hibou", "La chauve-souris", "Le colibri"],
+    a: 2,
+    why: "C’est la chauve-souris. L’écureuil volant, lui, plane sans battre des ailes."
+  },
+  {
+    kind: "riddle",
     title: "Le dernier sceau",
-    text: "Pour ouvrir le grimoire, il faut un mot de passe de 5 lettres, construit avec vos quatre réponses précédentes (écrites sans accent).",
-    extra: '<ol class="statements"><li>1re lettre&nbsp;: la 1re lettre de la réponse 1</li><li>2e lettre&nbsp;: la 6e lettre de la réponse 2</li><li>3e lettre&nbsp;: la 2e lettre de la réponse 4</li><li>4e lettre&nbsp;: la 8e lettre de la réponse 1</li><li>5e lettre&nbsp;: dans la réponse 2, la lettre dont le rang est la réponse 3 divisée par 6</li></ol>',
-    answers: ["crane"],
-    show: "CRÂNE",
-    hint: "La réponse 3 est 42, et 42 divisé par 6 donne 7. Comptez donc 7 lettres dans la réponse 2.",
-    mode: "text"
+    text: "Pour ouvrir le grimoire, écrivez vos réponses aux énigmes 1, 2, 3 et 4 l’une sous l’autre. Lisez la première lettre de chacune, de haut en bas&nbsp;: elles forment le mot que la sorcière lance à ceux qui ne donnent pas de bonbons.",
+    extra: "",
+    answers: ["sort"],
+    show: "SORT",
+    hint: "Dans «&nbsp;des bonbons ou un…&nbsp;», c’est le mot qui manque."
   }
 ];
 
 var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-var CODE = "YDPSLUH";
+var CODE = "RJUH";
+var HINT_COST = 30, WRONG_COST = 30;
 
 var app = document.getElementById("app");
-var st = { screen: "intro", i: 0, solved: false, hintsShown: {}, start: 0, secs: 0, timer: null };
+var st = { screen: "intro", i: 0, solved: false, hintsShown: {}, tried: {}, wrong: 0, start: 0, secs: 0, timer: null, team: "", endClock: "" };
 
 function norm(s) {
   return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
 }
-function check(r, value) {
+function check(s, value) {
   var v = norm(value);
   if (!v) return false;
-  return r.answers.some(function (a) {
-    return /^\d+$/.test(a) ? v === a : v.indexOf(a) !== -1;
-  });
+  return s.answers.some(function (a) { return v.indexOf(a) !== -1; });
+}
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
 }
 function mmss(s) {
   var m = Math.floor(s / 60), r = s % 60;
   return (m < 10 ? "0" : "") + m + ":" + (r < 10 ? "0" : "") + r;
-}
-function esc(s) {
-  return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
 }
 function hintCount() { return Object.keys(st.hintsShown).length; }
 function tick() {
@@ -221,29 +256,40 @@ function tick() {
 function startGame() {
   var tf = document.getElementById("team");
   st.team = tf ? tf.value.trim() : "";
-  st.screen = "game"; st.i = 0; st.solved = false; st.hintsShown = {};
+  st.screen = "game"; st.i = 0; st.solved = false; st.hintsShown = {}; st.tried = {}; st.wrong = 0;
   st.start = Date.now(); st.secs = 0;
   clearInterval(st.timer);
   st.timer = setInterval(tick, 1000);
   render();
 }
-function altarExtra(r) {
-  if (r.extra === "code") {
+function rank(i) {
+  var k = STEPS[i].kind, n = 0;
+  for (var j = 0; j <= i; j++) if (STEPS[j].kind === k) n++;
+  return n;
+}
+function kindLabel(i) {
+  return (STEPS[i].kind === "quiz" ? "Question " : "Énigme ") + rank(i) + " sur 5";
+}
+function extraHtml(s) {
+  if (s.extra === "code") {
     var cells = ALPHABET.map(function (l) { return "<span><b>" + l + "</b></span>"; }).join("");
     return '<p class="code" aria-label="Message codé">' + CODE + '</p><div class="alpha" aria-label="Alphabet">' + cells + "</div>";
   }
-  return r.extra;
+  return s.extra || "";
 }
 function carnetHtml() {
-  var rows = RIDDLES.slice(0, RIDDLES.length - 1).map(function (q, k) { return (k + 1) + ". " + q.show; }).join("<br>");
-  return '<div class="hint"><b>Votre carnet de réponses</b><br>' + rows + "</div>";
+  var rows = [];
+  STEPS.forEach(function (s, k) {
+    if (s.kind === "riddle" && k !== STEPS.length - 1) rows.push("Énigme " + rank(k) + " : " + s.show);
+  });
+  return '<div class="hint"><b>Votre carnet de réponses</b><br>' + rows.join("<br>") + "</div>";
 }
-function sealsHtml() {
+function sealsHtml(all) {
   var out = "";
-  for (var j = 0; j < RIDDLES.length; j++) {
-    var done = j < st.i || (j === st.i && st.solved);
-    var cls = done ? "seal done" : (j === st.i ? "seal current" : "seal");
-    out += '<li class="' + cls + '" aria-label="Sceau ' + (j + 1) + (done ? ", brisé" : "") + '">' + (done ? "✓" : (j + 1)) + "</li>";
+  for (var j = 0; j < STEPS.length; j++) {
+    var done = all || j < st.i || (j === st.i && st.solved);
+    var cls = "seal" + (STEPS[j].kind === "quiz" ? " q" : "") + (done ? " done" : (j === st.i ? " current" : ""));
+    out += '<li class="' + cls + '" aria-label="' + kindLabel(j) + (done ? ", validée" : "") + '">' + (done ? "✓" : (j + 1)) + "</li>";
   }
   return '<ul class="seals">' + out + "</ul>";
 }
@@ -252,12 +298,12 @@ function renderIntro() {
   app.innerHTML =
     '<div class="wrap">' +
     '<h1 class="display title">Le Grimoire maudit</h1>' +
-    '<p class="lead">La sorcière a enfermé la potion de la soirée dans son grimoire. Cinq sceaux le protègent. Brisez-les tous pour le rouvrir.</p>' +
+    '<p class="lead">La sorcière a enfermé la potion de la soirée dans son grimoire. Dix sceaux le protègent. Brisez-les tous pour le rouvrir.</p>' +
     '<ul class="rules">' +
     "<li>Il vous faut un téléphone pour valider les réponses.</li>" +
-    "<li>Comptez 30 à 40 minutes, en équipe. La dernière énigme réutilise les réponses précédentes.</li>" +
-    "<li>Un quiz d’Halloween de 8 questions termine la partie et peut réduire votre temps final.</li>" +
-    "<li>Bloqué&nbsp;? Chaque énigme a un indice, mais chaque indice ajoute 2 minutes à votre temps final.</li>" +
+    "<li>Dix épreuves en équipe, en alternance&nbsp;: 5 questions d’Halloween et 5 énigmes. Comptez environ 40 minutes.</li>" +
+    "<li>Bloqué sur une énigme&nbsp;? Un indice ajoute 30 secondes. Une mauvaise réponse à une question ajoute aussi 30 secondes.</li>" +
+    "<li>L’équipe qui a le temps final le plus court gagne.</li>" +
     "</ul>" +
     '<label for="team">Nom de votre équipe</label>' +
     '<input type="text" id="team" maxlength="30" autocomplete="off" style="margin-bottom:1.5rem">' +
@@ -269,61 +315,83 @@ function renderIntro() {
   document.getElementById("print").onclick = function () { st.screen = "print"; render(); };
 }
 
-function renderGame() {
-  var r = RIDDLES[st.i];
-  var last = st.i === RIDDLES.length - 1;
-  var html =
-    '<div class="wrap">' +
-    '<div class="top"><span class="brand display">' + esc(st.team || "Le Grimoire maudit") + '</span><span class="timer" id="timer" aria-label="Temps écoulé">' + mmss(st.secs) + "</span></div>" +
-    sealsHtml() +
-    '<section class="page">' +
-    '<h2 class="display page-title">' + r.title + "</h2>" +
-    '<p class="riddle">' + r.text + "</p>" +
-    altarExtra(r) +
-    (st.i === RIDDLES.length - 1 ? carnetHtml() : "");
+function quizBody(s) {
+  var tried = st.tried[st.i] || [];
+  var opts = s.o.map(function (t, k) {
+    var cls = "opt", txt = t, dis = st.solved;
+    if (st.solved && k === s.a) { cls += " right"; txt = "✓ " + t; }
+    else if (tried.indexOf(k) !== -1) { cls += " wrong"; txt = "✗ " + t; dis = true; }
+    return '<button class="' + cls + '" data-k="' + k + '"' + (dis ? " disabled" : "") + ">" + txt + "</button>";
+  }).join("");
+  return '<p class="riddle">' + s.q + '</p><div class="opts">' + opts + "</div>" +
+    '<p class="msg' + (st.solved ? " good" : "") + '" id="msg" aria-live="polite">' + (st.solved ? "Bonne réponse. " + s.why : "") + "</p>" +
+    (st.solved ? '<div class="row"><button class="btn" id="next">Épreuve suivante</button></div>' : "");
+}
+function riddleBody(s, last) {
+  var html = '<p class="riddle">' + s.text + "</p>" + extraHtml(s) + (last ? carnetHtml() : "");
   if (st.solved) {
-    html +=
-      '<p class="answer-line">' + r.show + "</p>" +
+    html += '<p class="answer-line">' + s.show + "</p>" +
       '<p class="msg good" aria-live="polite">Sceau brisé&nbsp;!</p>' +
-      '<div class="row"><button class="btn" id="next">' + (last ? "Ouvrir le grimoire" : "Énigme suivante") + "</button></div>";
+      '<div class="row"><button class="btn" id="next">' + (last ? "Ouvrir le grimoire" : "Épreuve suivante") + "</button></div>";
   } else {
-    html +=
-      '<form id="form" autocomplete="off">' +
+    html += '<form id="form" autocomplete="off">' +
       '<label for="ans">Votre réponse</label>' +
-      '<input type="text" id="ans" name="ans" autocomplete="off" autocapitalize="off" spellcheck="false"' + (r.mode === "numeric" ? ' inputmode="numeric"' : "") + ">" +
+      '<input type="text" id="ans" name="ans" autocomplete="off" autocapitalize="off" spellcheck="false">' +
       '<p class="msg" id="msg" aria-live="polite"></p>' +
       '<div class="row"><button class="btn" type="submit">Briser le sceau</button>' +
-      '<button class="btn ghost" type="button" id="hintbtn">Un indice (+2&nbsp;min)</button></div>' +
+      '<button class="btn ghost" type="button" id="hintbtn">Un indice (+30&nbsp;s)</button></div>' +
       "</form>" +
-      '<div id="hintbox">' + (st.hintsShown[st.i] ? '<p class="hint">' + r.hint + "</p>" : "") + "</div>";
+      '<div id="hintbox">' + (st.hintsShown[st.i] ? '<p class="hint">' + s.hint + "</p>" : "") + "</div>";
   }
-  html += "</section></div>";
-  app.innerHTML = html;
+  return html;
+}
 
-  if (st.solved) {
-    document.getElementById("next").onclick = function () {
-      if (last) { finish(); } else { st.i++; st.solved = false; render(); }
-    };
+function renderGame() {
+  var s = STEPS[st.i];
+  var last = st.i === STEPS.length - 1;
+  app.innerHTML =
+    '<div class="wrap">' +
+    '<div class="top"><span class="brand display">' + esc(st.team || "Le Grimoire maudit") + '</span><span class="timer" id="timer" aria-label="Temps écoulé">' + mmss(st.secs) + "</span></div>" +
+    sealsHtml(false) +
+    '<section class="page"><p class="kind">' + kindLabel(st.i) + "</p>" +
+    '<h2 class="display page-title">' + (s.kind === "quiz" ? "Question d’Halloween" : s.title) + "</h2>" +
+    (s.kind === "quiz" ? quizBody(s) : riddleBody(s, last)) +
+    "</section></div>";
+
+  var next = document.getElementById("next");
+  if (next) next.onclick = function () {
+    if (last) { finish(); } else { st.i++; st.solved = false; render(); }
+  };
+  if (st.solved) return;
+
+  if (s.kind === "quiz") {
+    Array.prototype.forEach.call(app.querySelectorAll(".opt"), function (b) {
+      b.onclick = function () {
+        var k = parseInt(b.getAttribute("data-k"), 10);
+        if (k === s.a) { st.solved = true; render(); return; }
+        st.wrong++;
+        (st.tried[st.i] = st.tried[st.i] || []).push(k);
+        b.disabled = true; b.className = "opt wrong"; b.textContent = "✗ " + s.o[k];
+        var m = document.getElementById("msg");
+        m.className = "msg bad"; m.textContent = "Raté, +30 secondes. Essayez encore.";
+      };
+    });
   } else {
-    var form = document.getElementById("form");
     var input = document.getElementById("ans");
     var msg = document.getElementById("msg");
-    form.onsubmit = function (e) {
+    document.getElementById("form").onsubmit = function (e) {
       e.preventDefault();
-      if (check(r, input.value)) {
-        st.solved = true; render();
-      } else {
-        msg.textContent = input.value.trim() ? "Ce n’est pas le bon mot. Relisez la fiche et réessayez." : "Écrivez une réponse avant de valider.";
-        msg.className = "msg bad";
-        input.classList.remove("shake");
-        void input.offsetWidth;
-        input.classList.add("shake");
-        input.select();
-      }
+      if (check(s, input.value)) { st.solved = true; render(); return; }
+      msg.textContent = input.value.trim() ? "Ce n’est pas le bon mot. Relisez la fiche et réessayez." : "Écrivez une réponse avant de valider.";
+      msg.className = "msg bad";
+      input.classList.remove("shake");
+      void input.offsetWidth;
+      input.classList.add("shake");
+      input.select();
     };
     document.getElementById("hintbtn").onclick = function () {
       st.hintsShown[st.i] = true;
-      document.getElementById("hintbox").innerHTML = '<p class="hint">' + r.hint + "</p>";
+      document.getElementById("hintbox").innerHTML = '<p class="hint">' + s.hint + "</p>";
     };
   }
 }
@@ -331,109 +399,60 @@ function renderGame() {
 function finish() {
   clearInterval(st.timer);
   tick();
-  st.q = 0;
-  st.score = 0;
-  st.screen = "quiz";
+  st.endClock = new Date().toLocaleTimeString("fr-BE");
+  st.screen = "win";
   render();
 }
 
 function renderWin() {
-  var m = Math.floor(st.secs / 60), s = st.secs % 60;
   var h = hintCount();
+  var final = st.secs + h * HINT_COST + st.wrong * WRONG_COST;
+  var m = Math.floor(st.secs / 60), s = st.secs % 60;
   app.innerHTML =
     '<div class="wrap">' +
     '<h1 class="display title">Le grimoire est ouvert&nbsp;!</h1>' +
-    sealsHtml().replace(/seal current/g, "seal done") +
-    '<p class="lead">Bravo, les cinq sceaux sont brisés.</p>' +
-    '<div class="page" style="margin-bottom:1.25rem"><h2 class="display page-title">' + esc(st.team || "Votre équipe") + '</h2>' +
-    '<p class="riddle">Temps final&nbsp;: <b>' + mmss(Math.max(0, st.secs + h * 120 - st.score * 30)) + '</b></p>' +
-    '<p class="stats">Temps de jeu&nbsp;: ' + m + "&nbsp;min " + s + "&nbsp;s. Indices&nbsp;: +" + (h * 2) + "&nbsp;min. Quiz&nbsp;: " + st.score + "/" + QUIZ.length + " bonnes réponses, −" + (st.score * 30) + "&nbsp;s. Terminé à " + esc(st.endClock || "") + ". Montrez cet écran à l’organisatrice.</p></div>" +
+    sealsHtml(true) +
+    '<div class="page" style="margin-bottom:1.25rem"><h2 class="display page-title">' + esc(st.team || "Votre équipe") + "</h2>" +
+    '<p class="riddle">Temps final&nbsp;: <b>' + mmss(final) + "</b></p>" +
+    '<p class="stats">Temps de jeu&nbsp;: ' + m + "&nbsp;min " + s + "&nbsp;s. Indices&nbsp;: " + h + ", soit +" + (h * 30) + "&nbsp;s. Mauvaises réponses aux questions&nbsp;: " + st.wrong + ", soit +" + (st.wrong * 30) + "&nbsp;s. Terminé à " + esc(st.endClock) + ". Montrez cet écran à l’organisatrice.</p></div>" +
     '<div class="page"><h2 class="display page-title">Dernière mission</h2>' +
-    "<p class=\"riddle\">L’organisatrice a caché la potion de la sorcière quelque part dans la maison. À vous de la retrouver&nbsp;!</p></div>" +
+    '<p class="riddle">L’organisatrice a caché la potion de la sorcière quelque part dans la maison. À vous de la retrouver&nbsp;!</p></div>' +
     '<div class="actions" style="margin-top:1.5rem"><button class="btn ghost" id="again">Rejouer</button></div>' +
     "</div>";
   document.getElementById("again").onclick = function () { st.screen = "intro"; render(); };
 }
 
 function renderPrint() {
-  var fiches = RIDDLES.map(function (r, k) {
-    return '<article class="fiche">' +
-      '<p class="brand display">Le Grimoire maudit – Fiche ' + (k + 1) + " sur " + RIDDLES.length + "</p>" +
-      '<h2 class="display page-title">' + r.title + "</h2>" +
-      '<p class="riddle">' + r.text + "</p>" +
-      altarExtra(r) +
-      '<p class="blank-label">Notre réponse</p><div class="blank"></div>' +
-      "</article>";
+  var letters = "ABCD";
+  var fiches = STEPS.map(function (s, k) {
+    var head = '<p class="brand display">Le Grimoire maudit – Épreuve ' + (k + 1) + " sur " + STEPS.length + "</p>" +
+      '<p class="kind">' + kindLabel(k) + "</p>";
+    if (s.kind === "quiz") {
+      return '<article class="fiche">' + head +
+        '<h2 class="display page-title">Question d’Halloween</h2>' +
+        '<p class="riddle">' + s.q + "</p>" +
+        '<p class="riddle">' + s.o.map(function (t, j) { return "<b>" + letters[j] + "</b>&nbsp;: " + t; }).join("<br>") + "</p>" +
+        '<p class="blank-label">Notre réponse (A, B, C ou D)</p><div class="blank"></div></article>';
+    }
+    return '<article class="fiche">' + head +
+      '<h2 class="display page-title">' + s.title + "</h2>" +
+      '<p class="riddle">' + s.text + "</p>" + extraHtml(s) +
+      '<p class="blank-label">Notre réponse</p><div class="blank"></div></article>';
   }).join("");
   app.innerHTML =
     '<div class="wrap">' +
     '<div class="top no-print"><button class="btn ghost" id="back">Retour</button><button class="btn" id="doprint">Imprimer</button></div>' +
-    '<p class="stats no-print">Une fiche par page. Cachez-les dans la pièce, puis les joueurs saisissent leurs réponses dans l’application.</p>' +
-    fiches + quizPrint() + "</div>";
+    '<p class="stats no-print">Une fiche par page, dans l’ordre des épreuves. Conseil&nbsp;: dans la fenêtre d’impression, choisissez 2 pages par feuille.</p>' +
+    fiches + "</div>";
   document.getElementById("back").onclick = function () { st.screen = "intro"; render(); };
   document.getElementById("doprint").onclick = function () {
     try { window.print(); } catch (e) { alert("Utilisez la fonction Imprimer de votre navigateur."); }
   };
 }
 
-var QUIZ = [
-  { q: "D’où vient la fête d’Halloween, à l’origine&nbsp;?", o: ["Des États-Unis", "D’Irlande", "Du Mexique", "De Roumanie"], a: 1, why: "Elle vient de Samain, une fête celtique irlandaise, exportée ensuite aux États-Unis par les émigrés irlandais." },
-  { q: "Avant la citrouille, quel légume creusait-on pour en faire une lanterne&nbsp;?", o: ["Le chou", "La betterave", "Le navet", "Le poireau"], a: 2, why: "C’était le navet. La citrouille, plus grosse et plus facile à creuser, l’a remplacé en Amérique." },
-  { q: "Que signifie «&nbsp;trick or treat&nbsp;»&nbsp;?", o: ["Une farce ou une friandise", "Un costume ou un masque", "Une chanson ou un cri", "Un jeu ou un cadeau"], a: 0, why: "Le « trick » est la farce promise si l’on ne reçoit pas de friandise." },
-  { q: "Dans quel pays se trouve la Transylvanie, la région du comte Dracula&nbsp;?", o: ["La Hongrie", "La Roumanie", "L’Écosse", "La Bulgarie"], a: 1, why: "La Transylvanie est une région de Roumanie, où Bram Stoker a situé son roman." },
-  { q: "Dans le roman de Mary Shelley, qui s’appelle Frankenstein&nbsp;?", o: ["Le monstre", "Le docteur qui le crée", "Le village", "Le laboratoire"], a: 1, why: "Frankenstein est le nom du docteur. La créature, elle, n’a pas de nom." },
-  { q: "Selon la légende, qui n’a pas de reflet dans un miroir&nbsp;?", o: ["Le loup-garou", "La momie", "Le vampire", "Le squelette"], a: 2, why: "Dans la légende, le miroir ne reflète pas le vampire." },
-  { q: "Quel est le seul mammifère capable de voler vraiment&nbsp;?", o: ["L’écureuil volant", "Le hibou", "La chauve-souris", "Le colibri"], a: 2, why: "C’est la chauve-souris. L’écureuil volant, lui, plane sans battre des ailes." },
-  { q: "Selon la tradition, pourquoi allumait-on des lanternes sculptées à Halloween&nbsp;?", o: ["Pour éclairer les enfants", "Pour chasser les mauvais esprits", "Pour annoncer l’hiver", "Pour attirer les chauves-souris"], a: 1, why: "On pensait que leur visage effrayant éloignait les mauvais esprits." }
-];
-
-function renderQuiz() {
-  var q = QUIZ[st.q];
-  var opts = q.o.map(function (t, k) { return '<button class="opt" data-k="' + k + '">' + t + "</button>"; }).join("");
-  app.innerHTML =
-    '<div class="wrap">' +
-    '<div class="top"><span class="brand display">' + esc(st.team || "Le Grimoire maudit") + '</span><span class="timer">Quiz ' + (st.q + 1) + "/" + QUIZ.length + "</span></div>" +
-    '<section class="page"><h2 class="display page-title">Le quiz de la sorcière</h2>' +
-    (st.q === 0 ? '<p class="stats">Le grimoire est ouvert, mais la sorcière pose une dernière épreuve. Chaque bonne réponse retire 30 secondes à votre temps final. Le chrono est arrêté.</p>' : "") +
-    '<p class="riddle">' + q.q + '</p><div class="opts">' + opts + '</div>' +
-    '<p class="msg" id="qmsg" aria-live="polite"></p><div class="row" id="qnext"></div></section></div>';
-  var btns = app.querySelectorAll(".opt");
-  Array.prototype.forEach.call(btns, function (b) {
-    b.onclick = function () { answerQuiz(parseInt(b.getAttribute("data-k"), 10), btns); };
-  });
-}
-function answerQuiz(k, btns) {
-  var q = QUIZ[st.q], ok = k === q.a;
-  if (ok) st.score++;
-  Array.prototype.forEach.call(btns, function (b, j) {
-    b.disabled = true;
-    if (j === q.a) { b.className = "opt right"; b.textContent = "✓ " + q.o[j]; }
-    else if (j === k) { b.className = "opt wrong"; b.textContent = "✗ " + q.o[j]; }
-  });
-  var msg = document.getElementById("qmsg");
-  msg.className = "msg " + (ok ? "good" : "bad");
-  msg.textContent = (ok ? "Bonne réponse. " : "Raté. ") + q.why;
-  var last = st.q === QUIZ.length - 1;
-  document.getElementById("qnext").innerHTML = '<button class="btn" id="qn">' + (last ? "Voir le résultat" : "Question suivante") + "</button>";
-  var qn = document.getElementById("qn");
-  qn.onclick = function () {
-    if (last) { st.endClock = new Date().toLocaleTimeString("fr-BE"); st.screen = "win"; } else { st.q++; }
-    render();
-  };
-  qn.focus();
-}
-function quizPrint() {
-  var letters = "ABCD";
-  var items = QUIZ.map(function (q, k) {
-    return '<p class="riddle"><b>' + (k + 1) + ".</b> " + q.q + "<br>" + q.o.map(function (t, j) { return letters[j] + "&nbsp;: " + t; }).join("<br>") + "</p>";
-  }).join("");
-  return '<article class="fiche"><p class="brand display">Le Grimoire maudit – Quiz</p><h2 class="display page-title">Le quiz de la sorcière</h2>' + items + "</article>";
-}
-
 function render() {
   if (st.screen === "intro") renderIntro();
   else if (st.screen === "game") renderGame();
-  else if (st.screen === "quiz") renderQuiz();
   else if (st.screen === "win") renderWin();
   else renderPrint();
   window.scrollTo(0, 0);
