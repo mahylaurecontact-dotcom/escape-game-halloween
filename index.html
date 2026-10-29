@@ -415,8 +415,8 @@ function renderWin() {
     '<div class="page" style="margin-bottom:1.25rem"><h2 class="display page-title">' + esc(st.team || "Votre équipe") + "</h2>" +
     '<p class="riddle">Temps final&nbsp;: <b>' + mmss(final) + "</b></p>" +
     '<p class="stats">Temps de jeu&nbsp;: ' + m + "&nbsp;min " + s + "&nbsp;s. Indices&nbsp;: " + h + ", soit +" + (h * 30) + "&nbsp;s. Mauvaises réponses aux questions&nbsp;: " + st.wrong + ", soit +" + (st.wrong * 30) + "&nbsp;s. Terminé à " + esc(st.endClock) + ". Montrez cet écran à l’organisatrice.</p></div>" +
-    '<div class="page"><h2 class="display page-title">Dernière mission</h2>' +
-    '<p class="riddle">L’organisatrice a caché la potion de la sorcière quelque part dans la maison. À vous de la retrouver&nbsp;!</p></div>' +
+    '<div class="page"><h2 class="display page-title">Et maintenant&nbsp;?</h2>' +
+    '<p class="riddle">Dès que la sorcière de la maison aura fait les comptes, on saura qui sont les meilleurs Frankenstein de la soirée&nbsp;!</p></div>' +
     '<div class="actions" style="margin-top:1.5rem"><button class="btn ghost" id="again">Rejouer</button></div>' +
     "</div>";
   document.getElementById("again").onclick = function () { st.screen = "intro"; render(); };
